@@ -32,53 +32,21 @@ Constraints:
 s contains only lowercase English letters.
 
 //Solution
-// Approach-1
 class Solution {
-    public int minDeletions(String s) {
-        Map<Character,Integer> map = new LinkedHashMap<>();
-        for(char ch : s.toCharArray()){
-            if(map.containsKey(ch)){
-                map.put(ch,map.get(ch)+1);
-            }else{
-                map.put(ch,1);
-            }
+    public boolean isPalindrome(int x) {
+        if(x==reverseNum(x)){
+            return true;
+        }else{
+            return false;
         }
-        System.out.println(map);
-        List<Integer> list = new ArrayList<>();
-        for(Map.Entry<Character,Integer> entry : map.entrySet()){
-            list.add(entry.getValue());
-        }
-        Collections.sort(list,Collections.reverseOrder());
-        System.out.println(list);
-        Set<Integer> set = new HashSet<>();
-        int delCount=0;
-        for(Integer count : list){
-            while(set.contains(count) && count>0){
-                delCount++;
-                count--;
-            }
-            set.add(count);
-        }
-        return delCount;
     }
-}
 
-//Approach-2 -- better
-class Solution {
-    public int minDeletions(String s) {
-        int[] characterCount = new int[26];
-        for(char ch : s.toCharArray()) {
-            characterCount[ch - 'a']++;
+    public int reverseNum(int num){
+        int revNum = 0;
+        while(num>0){
+            revNum = 10*revNum + num%10;
+            num/=10; 
         }
-        Set<Integer> set = new HashSet<>();
-        int deletionCount = 0;
-        for(int count : characterCount) {
-            while(set.contains(count) && count > 0) {
-                deletionCount++;
-                count--;
-            }
-            set.add(count);
-        }
-        return deletionCount;
+        return revNum;
     }
 }

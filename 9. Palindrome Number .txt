@@ -1,0 +1,56 @@
+//Question
+Given an integer x, return true if x is a 
+palindrome
+, and false otherwise.
+
+ 
+
+Example 1:
+
+Input: x = 121
+Output: true
+Explanation: 121 reads as 121 from left to right and from right to left.
+Example 2:
+
+Input: x = -121
+Output: false
+Explanation: From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome.
+Example 3:
+
+Input: x = 10
+Output: false
+Explanation: Reads 01 from right to left. Therefore it is not a palindrome.
+ 
+
+Constraints:
+
+-231 <= x <= 231 - 1
+
+//Solution
+class Solution {
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (numRows == 0) {
+            return result;
+        }
+
+        List<Integer> firstRow = new ArrayList<>();
+        firstRow.add(1);
+        result.add(firstRow);
+
+        for (int i = 1; i < numRows; i++) {
+            List<Integer> prevRow = result.get(i - 1);
+            List<Integer> currentRow = new ArrayList<>();
+            currentRow.add(1);
+
+            for (int j = 1; j < i; j++) {
+                currentRow.add(prevRow.get(j - 1) + prevRow.get(j));
+            }
+
+            currentRow.add(1);
+            result.add(currentRow);
+        }
+
+        return result;
+    }
+}
