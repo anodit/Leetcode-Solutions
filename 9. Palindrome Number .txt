@@ -27,6 +27,7 @@ Constraints:
 -231 <= x <= 231 - 1
 
 //Solution
+// Approach-1
 class Solution {
     public List<List<Integer>> generate(int numRows) {
         List<List<Integer>> result = new ArrayList<>();
@@ -52,5 +53,25 @@ class Solution {
         }
 
         return result;
+    }
+}
+
+// Approach-2
+class Solution {
+    public boolean isPalindrome(int x) {
+        int revX=0,temp=x;
+        if(x<0){
+            return false;
+        }
+        while(x>0){
+            revX = revX*10 + x%10;
+            x/=10;
+        }
+        x = temp;
+        if(revX==x){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
