@@ -1,8 +1,5 @@
-## 📝 Problem: Fix Names in a Table (LeetCode #1667)
-
-### **Table: Users**
-
-```text
+📝 Problem: Fix Names in a Table (LeetCode #1667)
+Table: Users
 +----------------+---------+
 | Column Name    | Type    |
 +----------------+---------+
@@ -10,24 +7,24 @@
 | name           | varchar |
 +----------------+---------+
 user_id is the primary key (column with unique values) for this table.
-```
 
-* This table contains the **ID** and the **name** of the user.
-* The `name` consists of only lowercase and uppercase characters.
-* We need to **fix the names** so that:
 
-  * Only the **first character is uppercase**
-  * The rest of the characters are **lowercase**
+This table contains the ID and the name of the user.
 
-Return the result table ordered by `user_id`.
+The name consists of only lowercase and uppercase characters.
 
----
+We need to fix the names so that:
 
-### **Example 1**
+Only the first character is uppercase
 
-**Input:**
+The rest of the characters are lowercase
 
-```text
+Return the result table ordered by user_id.
+
+Example 1
+
+Input:
+
 Users table:
 +---------+-------+
 | user_id | name  |
@@ -35,44 +32,36 @@ Users table:
 | 1       | aLice |
 | 2       | bOB   |
 +---------+-------+
-```
 
-**Output:**
 
-```text
+Output:
+
 +---------+-------+
 | user_id | name  |
 +---------+-------+
 | 1       | Alice |
 | 2       | Bob   |
 +---------+-------+
-```
 
----
-
-### ✅ **Solution (MySQL)**
-
-```sql
+✅ Solution (MySQL)
 SELECT 
     user_id,
     CONCAT(UPPER(LEFT(name, 1)), LOWER(SUBSTRING(name, 2))) AS name
 FROM Users
 ORDER BY user_id;
-```
 
----
+🔎 Explanation
 
-### 🔎 **Explanation**
+LEFT(name, 1) → Extracts the first character of the name.
 
-* `LEFT(name, 1)` → Extracts the **first character** of the name.
-* `UPPER(LEFT(name, 1))` → Converts the first character to **uppercase**.
-* `SUBSTRING(name, 2)` → Gets the substring **from the second character onwards**.
-* `LOWER(SUBSTRING(name, 2))` → Converts the rest of the characters to **lowercase**.
-* `CONCAT(...)` → Joins them back together.
-* Finally, we **order the result by user\_id** as required.
+UPPER(LEFT(name, 1)) → Converts the first character to uppercase.
 
----
+SUBSTRING(name, 2) → Gets the substring from the second character onwards.
 
-⚡ This query runs in **O(n)** where `n` = number of rows in the table.
+LOWER(SUBSTRING(name, 2)) → Converts the rest of the characters to lowercase.
 
----
+CONCAT(...) → Joins them back together.
+
+Finally, we order the result by user_id as required.
+
+⚡ This query runs in O(n) where n = number of rows in the table.
