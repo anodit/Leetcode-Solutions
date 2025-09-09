@@ -14,7 +14,6 @@ Each problem solution file follows a consistent format:
 
 - **LT-Problem-1 to 500**  
   Contains solutions for LeetCode problems #1 – #500.  
-  Example: `1_TwoSum.txt`, `485_MaxConsecutiveOnes.txt`
 
 - **LT-Problem-501 to 1000**  
   Contains solutions for LeetCode problems #501 – #1000.  
