@@ -35,7 +35,7 @@ class SolutionBruteForce {
         return maxStreak;
     }
 }
-
+Note :- This Solution will lead to Time Limit Exceeded Error
 Approach
 - Start from each index and try to extend consecutive 1s until a 0 is found.
 - Update maxStreak whenever a longer streak is seen.
