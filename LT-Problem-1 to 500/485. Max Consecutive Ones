@@ -1,0 +1,116 @@
+Question
+Given a binary array nums, return the maximum number of consecutive 1's in the array.
+
+Example 1:
+Input: nums = [1,1,0,1,1,1]
+Output: 3
+Explanation: The first two digits or the last three digits are consecutive 1s. 
+The maximum number of consecutive 1s is 3.
+
+Example 2:
+Input: nums = [1,0,1,1,0,1]
+Output: 2
+
+Constraints:
+1 <= nums.length <= 100000
+nums[i] is either 0 or 1.
+
+
+Solution 1 (Brute Force - O(n^2))
+class SolutionBruteForce {
+    public int findMaxConsecutiveOnes(int[] nums) {
+        int maxStreak = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+            int currentStreak = 0;
+            for (int j = i; j < nums.length; j++) {
+                if (nums[j] == 1) {
+                    currentStreak++;
+                    maxStreak = Math.max(maxStreak, currentStreak);
+                } else {
+                    break; // streak broken
+                }
+            }
+        }
+        return maxStreak;
+    }
+}
+
+Approach
+- Start from each index and try to extend consecutive 1s until a 0 is found.
+- Update maxStreak whenever a longer streak is seen.
+- Break early when a 0 breaks the streak.
+
+Time Complexity: O(n^2)
+Space Complexity: O(1)
+
+Intuition
+Naive method checks every possible streak.
+Helps understand the problem but not efficient for large input sizes.
+
+
+
+Solution 2 (Functional/String Approach - O(n) Time, O(n) Space)
+import java.util.Arrays;
+
+class SolutionFunctional {
+    public int findMaxConsecutiveOnes(int[] nums) {
+        StringBuilder sb = new StringBuilder();
+        for (int num : nums) sb.append(num);
+
+        String[] streaks = sb.toString().split("0");
+        return Arrays.stream(streaks)
+                     .mapToInt(String::length)
+                     .max()
+                     .orElse(0);
+    }
+}
+
+Approach
+- Convert nums into a binary string like "11011".
+- Split string on '0' to get chunks of consecutive 1s.
+- Find maximum length of those chunks.
+
+Time Complexity: O(n)
+Space Complexity: O(n)
+
+Intuition
+Think of 0 as a delimiter.
+Between two 0s, we get consecutive 1s as substrings.
+The length of the longest such substring is the answer.
+
+
+
+Solution 3 (Optimal - O(n) Time, O(1) Space)
+class Solution {
+    public int findMaxConsecutiveOnes(int[] nums) {
+        int currentStreak = 0;   // current consecutive 1s
+        int maxStreak = 0;       // longest streak seen so far
+
+        for (int num : nums) {
+            if (num == 1) {
+                currentStreak++;
+            } else {
+                maxStreak = Math.max(maxStreak, currentStreak);
+                currentStreak = 0;
+            }
+        }
+        return Math.max(maxStreak, currentStreak);
+    }
+}
+
+Approach
+- Traverse array once.
+- Keep two variables:
+    - currentStreak → current sequence of 1s
+    - maxStreak → longest seen so far
+- On 1 → increment currentStreak
+- On 0 → update maxStreak and reset currentStreak
+- Answer is max of both at the end
+
+Time Complexity: O(n)
+Space Complexity: O(1)
+
+Intuition
+Track current run of 1s and compare with the maximum whenever streak breaks.
+Efficient one-pass solution with no extra space.
