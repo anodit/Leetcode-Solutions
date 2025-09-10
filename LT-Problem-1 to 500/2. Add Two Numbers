@@ -1,0 +1,117 @@
+📝 Question
+
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+Example 1
+
+Input: l1 = [2,4,3], l2 = [5,6,4]
+Output: [7,0,8]
+Explanation: 342 + 465 = 807.
+
+
+Example 2
+
+Input: l1 = [0], l2 = [0]
+Output: [0]
+
+
+Example 3
+
+Input: l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
+Output: [8,9,9,9,0,0,0,1]
+
+
+Constraints
+
+The number of nodes in each linked list is in the range [1, 100].
+
+0 <= Node.val <= 9
+
+It is guaranteed the list represents a number without leading zeros.
+
+💻 Solution(s)
+1) Iterative (recommended — O(n) time, O(1) extra space besides output)
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode dHead = new ListNode(0); // dummy head
+        ListNode curr = dHead;
+        int carry = 0;
+        
+        // continue while any list has nodes or there's a carry
+        while (l1 != null || l2 != null || carry != 0) {
+            int x = (l1 != null) ? l1.val : 0;
+            int y = (l2 != null) ? l2.val : 0;
+            
+            int sum = x + y + carry;
+            carry = sum / 10;
+            curr.next = new ListNode(sum % 10);
+            curr = curr.next;
+            
+            if (l1 != null) l1 = l1.next;
+            if (l2 != null) l2 = l2.next;
+        }
+        
+        return dHead.next;
+    }
+}
+
+2) Recursive (alternative — slightly nicer recursion but uses call stack)
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        return addRec(l1, l2, 0);
+    }
+    
+    private ListNode addRec(ListNode l1, ListNode l2, int carry) {
+        if (l1 == null && l2 == null && carry == 0) return null;
+        
+        int x = (l1 != null) ? l1.val : 0;
+        int y = (l2 != null) ? l2.val : 0;
+        int sum = x + y + carry;
+        
+        ListNode node = new ListNode(sum % 10);
+        int nextCarry = sum / 10;
+        
+        node.next = addRec(l1 != null ? l1.next : null,
+                           l2 != null ? l2.next : null,
+                           nextCarry);
+        return node;
+    }
+}
+
+🧠 Approach
+
+Use a dummy head to simplify node insertions.
+
+Maintain a carry variable for sums ≥ 10.
+
+Iterate until both lists are exhausted and there's no carry left:
+
+For each step take x = l1.val (or 0 if l1 is null) and y = l2.val (or 0).
+
+sum = x + y + carry, create a new node with sum % 10, update carry = sum / 10.
+
+Advance l1, l2, and the curr pointer.
+
+Return dummy.next.
+
+💡 Intuition
+
+You are adding two numbers digit-by-digit (like elementary school addition) starting from least-significant digit. Using a dummy head avoids branching for the head node. The carry is passed forward each step; if after both lists are done there's a leftover carry, it must become a new node (e.g., 5 + 5 = 0 with carry 1 → final ... -> 0 -> 1).
+
+⏱ Complexity
+
+Time: O(max(m, n)) where m and n are the lengths of the two lists (each node visited once).
+
+Space: O(1) extra besides the output list. (Recursive solution uses O(max(m,n)) call stack.)
