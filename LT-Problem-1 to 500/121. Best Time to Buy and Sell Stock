@@ -1,0 +1,110 @@
+# 📄 Question
+
+**121. Best Time to Buy and Sell Stock**
+
+You are given an array `prices` where `prices[i]` is the price of a given stock on the `iᵗʰ` day.
+
+You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
+
+Return *the maximum profit you can achieve from this transaction*. If you cannot achieve any profit, return `0`.
+
+**Example 1**
+Input: `prices = [7,1,5,3,6,4]`
+Output: `5`
+Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6 - 1 = 5.
+
+**Example 2**
+Input: `prices = [7,6,4,3,1]`
+Output: `0`
+Explanation: In this case, no transaction is done and the max profit = 0.
+
+**Constraints**
+
+* `1 <= prices.length <= 10^5`
+* `0 <= prices[i] <= 10^4`
+
+---
+
+# 💡 Intuition
+
+We want the largest difference `prices[j] - prices[i]` with `j > i`.
+
+* Brute-force checks every pair (correct but slow).
+* Optimal idea: while scanning once, keep track of the lowest price seen so far (`minPrice`). For each price, potential profit = `price - minPrice`. Update `maxProfit` if this is larger. This gives `O(n)` time and `O(1)` space.
+
+---
+
+# 🧠 Approach
+
+1. **Brute force (O(n²))**: try all pairs `(i, j)` with `j > i`, compute profit and track max. Correct but TLE for large `n`.
+2. **Optimal single-pass (O(n))**: maintain `minPrice` and `maxProfit` while iterating through prices once.
+
+---
+
+# 🛠️ Solution(s)
+
+### 1) Brute-force (correct but slow — may TLE)
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length < 2) return 0;
+
+        int maxProfit = 0;
+        for (int i = 0; i < prices.length - 1; i++) {
+            for (int j = i + 1; j < prices.length; j++) {
+                int profit = prices[j] - prices[i];
+                if (profit > maxProfit) {
+                    maxProfit = profit;
+                }
+            }
+        }
+        return maxProfit;
+    }
+}
+```
+
+* **Time:** `O(n^2)` — may TLE for `n ~ 10^5`.
+* **Space:** `O(1)`.
+
+---
+
+### 2) Optimal — Single pass (O(n), recommended)
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length < 2) return 0;
+
+        int minPrice = Integer.MAX_VALUE;
+        int maxProfit = 0;
+
+        for (int price : prices) {
+            if (price < minPrice) {
+                minPrice = price;          // better day to buy
+            } else {
+                maxProfit = Math.max(maxProfit, price - minPrice); // possible sell today
+            }
+        }
+        return maxProfit;
+    }
+}
+```
+
+* **Time:** `O(n)` — single pass.
+* **Space:** `O(1)` — only two variables.
+
+---
+
+# 🔍 Dry run (single-pass) — `prices = [7,1,5,3,6,4]`
+
+| day (i) | price | minPrice (after update) | potential profit = price - minPrice | maxProfit (after update) |
+| ------: | :---: | :---------------------: | :---------------------------------: | :----------------------: |
+|       0 |   7   |            7            |              7 - 7 = 0              |             0            |
+|       1 |   1   |            1            |              1 - 1 = 0              |             0            |
+|       2 |   5   |            1            |              5 - 1 = 4              |             4            |
+|       3 |   3   |            1            |              3 - 1 = 2              |             4            |
+|       4 |   6   |            1            |              6 - 1 = 5              |             5            |
+|       5 |   4   |            1            |              4 - 1 = 3              |             5            |
+
+Final answer: `maxProfit = 5` (buy at 1, sell at 6).
