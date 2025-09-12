@@ -143,3 +143,24 @@ Each index moves to `(i + k) % n`, forming cycles. Move elements cycle by cycle.
 **Time Complexity:** O(n)
 **Space Complexity:** O(1)
 
+Dry Run (Solution 3: Reversal Algorithm)
+
+Input:
+nums = [1,2,3,4,5,6,7], k = 3
+
+Step 1: k = k % n → 3 % 7 = 3
+
+Step 2: Reverse the whole array
+Before: [1,2,3,4,5,6,7]
+After : [7,6,5,4,3,2,1]
+
+Step 3: Reverse first k elements (0 to 2)
+Before: [7,6,5,4,3,2,1]
+After : [5,6,7,4,3,2,1]
+
+Step 4: Reverse the remaining elements (3 to 6)
+Before: [5,6,7,4,3,2,1]
+After : [5,6,7,1,2,3,4]
+
+Output:
+[5,6,7,1,2,3,4]
