@@ -1,0 +1,165 @@
+### **Question ❓**
+
+Given two integer arrays `nums1` and `nums2`, return an array of their **intersection**.
+Each element in the result must be **unique 🟢** and you may return the result in any order.
+
+**Example 1:**
+👉 Input: nums1 = \[1,2,2,1], nums2 = \[2,2]
+✅ Output: \[2]
+
+**Example 2:**
+👉 Input: nums1 = \[4,9,5], nums2 = \[9,4,9,8,4]
+✅ Output: \[9,4]
+📌 Explanation: \[4,9] is also accepted.
+
+**Constraints:**
+
+* 1 <= nums1.length, nums2.length <= 1000
+* 0 <= nums1\[i], nums2\[i] <= 1000
+
+---
+
+### **Solution(s) 💡**
+
+#### 🔴 Solution 1 — Brute Force (Naive)
+
+```java
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        java.util.Set<Integer> set = new java.util.HashSet<>();
+        for (int i = 0; i < nums1.length; i++) {
+            for (int j = 0; j < nums2.length; j++) {
+                if (nums1[i] == nums2[j]) {
+                    set.add(nums1[i]);
+                    break;
+                }
+            }
+        }
+        int[] res = new int[set.size()];
+        int idx = 0;
+        for (int v : set) res[idx++] = v;
+        return res;
+    }
+}
+```
+
+⏱ **Time Complexity:** O(m·n)
+💾 **Space Complexity:** O(min(m,n))
+
+---
+
+#### 🟡 Solution 2 — HashSet (Recommended ✅)
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Set<Integer> set1 = new HashSet<>();
+        for (int n : nums1) set1.add(n);
+
+        Set<Integer> resultSet = new HashSet<>();
+        for (int n : nums2) {
+            if (set1.contains(n)) resultSet.add(n);
+        }
+
+        int[] res = new int[resultSet.size()];
+        int i = 0;
+        for (int v : resultSet) res[i++] = v;
+        return res;
+    }
+}
+```
+
+⏱ **Time Complexity:** O(m + n)
+💾 **Space Complexity:** O(min(m,n))
+
+---
+
+#### 🔵 Solution 3 — Sorting + Two Pointers 📊
+
+```java
+import java.util.Arrays;
+import java.util.ArrayList;
+
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        ArrayList<Integer> list = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] == nums2[j]) {
+                if (list.isEmpty() || list.get(list.size() - 1) != nums1[i]) {
+                    list.add(nums1[i]);
+                }
+                i++; j++;
+            } else if (nums1[i] < nums2[j]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        int[] res = new int[list.size()];
+        for (int k = 0; k < list.size(); k++) res[k] = list.get(k);
+        return res;
+    }
+}
+```
+
+⏱ **Time Complexity:** O(m log m + n log n)
+💾 **Space Complexity:** O(1) (ignoring output)
+
+---
+
+#### 🟢 Solution 4 — Boolean Bitmap (using constraints ⚡)
+
+```java
+import java.util.ArrayList;
+
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        boolean[] seen1 = new boolean[1001];
+        boolean[] used = new boolean[1001];
+        for (int v : nums1) seen1[v] = true;
+
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int v : nums2) {
+            if (seen1[v] && !used[v]) {
+                list.add(v);
+                used[v] = true;
+            }
+        }
+
+        int[] res = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) res[i] = list.get(i);
+        return res;
+    }
+}
+```
+
+⏱ **Time Complexity:** O(m + n)
+💾 **Space Complexity:** O(1) (fixed 1001-size arrays)
+
+---
+
+### **Approach 🛠️**
+
+* **Brute Force 🔴** → Check each element of `nums1` against `nums2`, store matches in a set.
+* **HashSet 🟡** → Put one array into a set, check elements of the other, store common in a result set.
+* **Sorting + Two Pointers 🔵** → Sort both arrays and use two pointers to find common elements, skip duplicates.
+* **Bitmap 🟢** → Use boolean arrays since values are in range \[0..1000], mark presence and avoid duplicates.
+
+---
+
+### **Intuition 💭**
+
+* Intersection means elements **present in both arrays**, once only.
+* **Set** naturally models uniqueness → ideal for this problem.
+* **Sorting** aligns duplicates → easy to scan linearly.
+* **Bitmap** leverages constraints → ultra-fast and constant memory.
+
+---
+
+👉 Recommended: **Solution 2 (HashSet) 🟡** → simple + efficient for general use.
