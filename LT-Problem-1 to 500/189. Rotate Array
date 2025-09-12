@@ -1,0 +1,145 @@
+### **Question**
+
+Given an integer array nums, rotate the array to the right by k steps, where k is non-negative.
+
+**Example 1:**
+Input: nums = \[1,2,3,4,5,6,7], k = 3
+Output: \[5,6,7,1,2,3,4]
+
+**Example 2:**
+Input: nums = \[-1,-100,3,99], k = 2
+Output: \[3,99,-1,-100]
+
+**Constraints:**
+1 <= nums.length <= 10^5
+-2^31 <= nums\[i] <= 2^31 - 1
+0 <= k <= 10^5
+
+---
+
+### **Solution 1: Brute Force**
+
+```java
+public class Solution {
+    public void rotate(int[] nums, int k) {
+        int n = nums.length;
+        k = k % n;
+        for (int i = 0; i < k; i++) {
+            int last = nums[n - 1];
+            for (int j = n - 1; j > 0; j--) {
+                nums[j] = nums[j - 1];
+            }
+            nums[0] = last;
+        }
+    }
+}
+```
+
+**Approach:**
+Rotate the array one step at a time, repeat k times.
+
+**Intuition:**
+Push last element to front repeatedly.
+
+**Time Complexity:** O(n·k)
+**Space Complexity:** O(1)
+
+---
+
+### **Solution 2: Extra Array**
+
+```java
+public class Solution {
+    public void rotate(int[] nums, int k) {
+        int n = nums.length;
+        k = k % n;
+        int[] temp = new int[n];
+        for (int i = 0; i < n; i++) {
+            temp[(i + k) % n] = nums[i];
+        }
+        System.arraycopy(temp, 0, nums, 0, n);
+    }
+}
+```
+
+**Approach:**
+Use an extra array to store rotated positions, then copy back.
+
+**Intuition:**
+Directly place each element in its new position.
+
+**Time Complexity:** O(n)
+**Space Complexity:** O(n)
+
+---
+
+### **Solution 3: Reversal Algorithm (Optimal)**
+
+```java
+public class Solution {
+    public void rotate(int[] nums, int k) {
+        int n = nums.length;
+        k = k % n;
+        reverse(nums, 0, n - 1);
+        reverse(nums, 0, k - 1);
+        reverse(nums, k, n - 1);
+    }
+    private void reverse(int[] nums, int l, int r) {
+        while (l < r) {
+            int temp = nums[l];
+            nums[l] = nums[r];
+            nums[r] = temp;
+            l++;
+            r--;
+        }
+    }
+}
+```
+
+**Approach:**
+
+1. Reverse the whole array
+2. Reverse first k elements
+3. Reverse the rest
+
+**Intuition:**
+Rotating right by k means last k elements should come to front. Reversals restore order.
+
+**Time Complexity:** O(n)
+**Space Complexity:** O(1)
+
+---
+
+### **Solution 4: Cyclic Replacement (Using GCD)**
+
+```java
+public class Solution {
+    public void rotate(int[] nums, int k) {
+        int n = nums.length;
+        k = k % n;
+        int count = 0;
+        for (int start = 0; count < n; start++) {
+            int current = start;
+            int prev = nums[start];
+            do {
+                int next = (current + k) % n;
+                int temp = nums[next];
+                nums[next] = prev;
+                prev = temp;
+                current = next;
+                count++;
+            } while (start != current);
+        }
+    }
+}
+```
+
+**Approach:**
+Follow cycles of movement (using modulo arithmetic) until all elements are placed.
+
+**Intuition:**
+Each index moves to `(i + k) % n`, forming cycles. Move elements cycle by cycle.
+
+**Time Complexity:** O(n)
+**Space Complexity:** O(1)
+
