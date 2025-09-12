@@ -1,0 +1,181 @@
+### **Question ❓**
+
+Given two integer arrays `nums1` and `nums2`, return an array of their **intersection**.
+Each element in the result must appear **as many times** as it shows in **both** arrays (i.e., intersection as multisets). Return result in any order.
+
+**Example 1:**
+👉 Input: nums1 = \[1,2,2,1], nums2 = \[2,2]
+✅ Output: \[2,2]
+
+**Example 2:**
+👉 Input: nums1 = \[4,9,5], nums2 = \[9,4,9,8,4]
+✅ Output: \[4,9]
+📌 Explanation: \[9,4] is also accepted.
+
+**Constraints:**
+
+* 1 <= nums1.length, nums2.length <= 1000
+* 0 <= nums1\[i], nums2\[i] <= 1000
+
+---
+
+### **Solution(s) 💡**
+
+#### 🔴 Solution 1 — Brute Force (naive)
+
+```java
+import java.util.ArrayList;
+
+public class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        ArrayList<Integer> res = new ArrayList<>();
+        boolean[] used = new boolean[nums2.length];
+        for (int i = 0; i < nums1.length; i++) {
+            for (int j = 0; j < nums2.length; j++) {
+                if (!used[j] && nums1[i] == nums2[j]) {
+                    res.add(nums1[i]);
+                    used[j] = true;
+                    break;
+                }
+            }
+        }
+        int[] out = new int[res.size()];
+        for (int i = 0; i < res.size(); i++) out[i] = res.get(i);
+        return out;
+    }
+}
+```
+
+⏱ **Time Complexity:** O(m·n)
+💾 **Space Complexity:** O(min(m,n)) for result + O(n) for used\[]
+
+---
+
+#### 🟡 Solution 2 — HashMap counting (recommended)
+
+```java
+import java.util.*;
+
+public class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        if (nums1.length > nums2.length) return intersect(nums2, nums1); // build map on smaller
+
+        Map<Integer, Integer> count = new HashMap<>();
+        for (int v : nums1) count.put(v, count.getOrDefault(v, 0) + 1);
+
+        List<Integer> res = new ArrayList<>();
+        for (int v : nums2) {
+            if (count.containsKey(v) && count.get(v) > 0) {
+                res.add(v);
+                count.put(v, count.get(v) - 1);
+            }
+        }
+
+        int[] out = new int[res.size()];
+        for (int i = 0; i < res.size(); i++) out[i] = res.get(i);
+        return out;
+    }
+}
+```
+
+⏱ **Time Complexity:** O(m + n)
+💾 **Space Complexity:** O(min(m,n)) for the hashmap
+
+---
+
+#### 🔵 Solution 3 — Sorting + Two Pointers (simple & stable)
+
+```java
+import java.util.*;
+
+public class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int i = 0, j = 0;
+        List<Integer> res = new ArrayList<>();
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] == nums2[j]) {
+                res.add(nums1[i]);
+                i++; j++;
+            } else if (nums1[i] < nums2[j]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        int[] out = new int[res.size()];
+        for (int k = 0; k < res.size(); k++) out[k] = res.get(k);
+        return out;
+    }
+}
+```
+
+⏱ **Time Complexity:** O(m log m + n log n)
+💾 **Space Complexity:** O(1) extra (ignoring output)
+
+---
+
+#### 🟢 Solution 4 — Bitmap/counting array (when values small bounded)
+
+> Uses constraint `0 <= nums[i] <= 1000` to use fixed arrays — fastest in practice.
+
+```java
+import java.util.*;
+
+public class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        int[] freq = new int[1001];
+        for (int v : nums1) freq[v]++;
+        List<Integer> res = new ArrayList<>();
+        for (int v : nums2) {
+            if (freq[v] > 0) {
+                res.add(v);
+                freq[v]--;
+            }
+        }
+        int[] out = new int[res.size()];
+        for (int i = 0; i < res.size(); i++) out[i] = res.get(i);
+        return out;
+    }
+}
+```
+
+⏱ **Time Complexity:** O(m + n)
+💾 **Space Complexity:** O(1) extra (fixed 1001 array)
+
+---
+
+### **Approach 🛠️**
+
+* **Brute Force 🔴:** For each element in `nums1`, scan `nums2` for a match that hasn’t been used. Mark matched entries in `nums2` to avoid reusing them. Works but slow.
+* **HashMap 🟡:** Count frequencies of elements from the smaller array in a hashmap. Iterate the other array, and whenever an element exists with positive count, add to result and decrement the count. This yields linear time and uses space proportional to the smaller array.
+* **Sorting + Two Pointers 🔵:** Sort both arrays and walk them together with two pointers. When values equal, add to result and advance both pointers. If not, advance the smaller one. Simple and memory-light.
+* **Bitmap 🟢:** When value domain is small and known (0..1000), keep an integer frequency array for one input and decrement while scanning the other. Very fast and uses constant extra space.
+
+---
+
+### **Intuition 💭**
+
+* Intersection as multisets requires tracking **counts** (not just presence). So you either store counts (HashMap / counting array) or align elements (sorting) to match duplicates correctly.
+* Use the smaller array for building counts to save memory (`intersect(nums2, nums1)` trick).
+* If arrays are sorted or can be sorted cheaply, two pointers is simple and efficient.
+* If value range is small, direct indexed counting is fastest and constant-space.
+
+---
+
+### **Follow-ups & Recommendations ⚙️**
+
+1. **What if the given arrays are already sorted?**
+
+   * Use **Sorting + Two Pointers 🔵** directly — O(m + n) time, O(1) extra space. No need to sort again.
+
+2. **What if `nums1` is much smaller than `nums2`?**
+
+   * Build a **HashMap** (or counting map) from the **smaller** array and iterate the larger one. This minimizes memory (`O(min(m,n))`) and is optimal in practice.
+
+3. **What if `nums2` is stored on disk and you cannot load all elements into memory?**
+
+   * If `nums1` fits into memory: build a hashmap (or counting array) of `nums1` and **stream** through `nums2` chunk-by-chunk, producing intersection elements as you go (decrement counts).
+   * If neither fits: use **external sort** on both arrays (sort-by-chunks, merge), then do a streaming two-pointer merge to produce intersections.
+   * Alternatively, if value range is small (like 0..1000), use counting arrays and stream through disk file(s) to compute counts — extremely memory friendly.
