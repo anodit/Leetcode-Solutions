@@ -1,0 +1,116 @@
+# 📌 Question
+
+Given an integer array `nums`, move all `0`s to the end **in-place** while keeping the relative order of non-zero elements.
+⚡ No extra copy of the array allowed.
+
+**Example 1**:
+Input → `[0,1,0,3,12]`
+Output → `[1,3,12,0,0]`
+
+**Example 2**:
+Input → `[0]`
+Output → `[0]`
+
+---
+
+# 🧠 Intuition
+
+* We want **non-zero numbers first** ➡️ in their original order.
+* Push all **zeroes at the end**.
+* Must do this **in-place** (no extra array).
+
+Think of it like **compressing** all useful items (non-zeros) to the front, and then just filling the empty space with 0’s.
+
+---
+
+# 🛠️ Approaches
+
+## 1️⃣ Brute Force (Not Good ❌)
+
+* Create a **new array**, copy non-zero elements, then add zeros at the end.
+* But ❌ this breaks the “in-place” rule.
+
+---
+
+## 2️⃣ Two-Pass Method (✅ Simple & Clean)
+
+👉 **Step 1**: Move all non-zero numbers to the front.
+👉 **Step 2**: Fill the remaining positions with `0`.
+
+### Java Code
+
+```java
+class Solution {
+    public void moveZeroes(int[] nums) {
+        int insertPos = 0; // index to place next non-zero element
+        
+        // Step 1: Shift all non-zero numbers forward
+        for (int num : nums) {
+            if (num != 0) {
+                nums[insertPos++] = num;
+            }
+        }
+        
+        // Step 2: Fill remaining positions with zeros
+        while (insertPos < nums.length) {
+            nums[insertPos++] = 0;
+        }
+    }
+}
+```
+
+✅ Time: O(n)
+✅ Space: O(1)
+
+---
+
+## 3️⃣ One-Pass Method (⚡ More Optimized: Min Ops)
+
+👉 Use **two pointers** (`left` = position for next non-zero, `right` = scanning).
+👉 Whenever we see a non-zero, **swap** with `left`.
+
+### Java Code
+
+```java
+class Solution {
+    public void moveZeroes(int[] nums) {
+        int left = 0; // position for next non-zero
+        
+        for (int right = 0; right < nums.length; right++) {
+            if (nums[right] != 0) {
+                // Swap nums[left] and nums[right]
+                int temp = nums[left];
+                nums[left] = nums[right];
+                nums[right] = temp;
+                left++;
+            }
+        }
+    }
+}
+```
+
+✅ Time: O(n)
+✅ Space: O(1)
+✅ Minimizes operations — only swaps when needed 🎯
+
+---
+
+# 🎯 Follow-Up (Minimizing Ops)
+
+* **Two-Pass** writes all numbers twice (first pass + filling zeros).
+* **One-Pass Swap** only writes/swaps when necessary.
+* So ⚡ **One-Pass Swap Method is optimal**.
+
+---
+
+# ✨ Final Summary
+
+* **Brute Force** → ❌ Extra space (not allowed).
+* **Two-Pass** → ✅ Easy, but may do extra writes.
+* **One-Pass Swap** → ✅⚡ Best, minimal operations, in-place.
+
+---
+
+👉 Recommended for interviews: Explain **both Two-Pass & One-Pass**, then say **One-Pass is optimal**.
+
+---
