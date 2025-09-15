@@ -1,0 +1,166 @@
+# **Question**
+
+There is a malfunctioning keyboard where some letter keys do not work. All other keys on the keyboard work properly.
+
+Given a string `text` of words separated by a single space (no leading or trailing spaces) and a string `brokenLetters` of all distinct letter keys that are broken, return the number of words in `text` you can fully type using this keyboard.
+
+**Example 1:**
+Input: `text = "hello world"`, `brokenLetters = "ad"`
+Output: `1`
+Explanation: We cannot type `"world"` because the `'d'` key is broken.
+
+**Example 2:**
+Input: `text = "leet code"`, `brokenLetters = "lt"`
+Output: `1`
+Explanation: We cannot type `"leet"` because the `'l'` and `'t'` keys are broken.
+
+**Example 3:**
+Input: `text = "leet code"`, `brokenLetters = "e"`
+Output: `0`
+Explanation: We cannot type either word because the `'e'` key is broken.
+
+**Constraints:**
+
+* `1 <= text.length <= 10^4`
+* `0 <= brokenLetters.length <= 26`
+* `text` consists of words separated by a single space without any leading or trailing spaces.
+* Each word only consists of lowercase English letters.
+* `brokenLetters` consists of distinct lowercase English letters.
+
+---
+
+# **Solution(s)** → Java implementations (from brute force to optimal) 🧩
+
+### 1) Brute-force (use `indexOf`) — simple and clear 🐢
+
+```java
+class Solution {
+    public int canBeTypedWordsBrute(String text, String brokenLetters) {
+        String[] words = text.split(" ");
+        int count = 0;
+        for (String w : words) {
+            boolean ok = true;
+            for (char c : w.toCharArray()) {
+                if (brokenLetters.indexOf(c) != -1) { // scans brokenLetters (<=26)
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok) count++;
+        }
+        return count;
+    }
+}
+```
+
+**Time:** O(N \* B) where N = total characters in text, B = brokenLetters.length (≤26).
+**Space:** O(1) (ignoring split result).
+
+---
+
+### 2) HashSet (readable & average fast) 🌟
+
+```java
+import java.util.*;
+
+class Solution {
+    public int canBeTypedWordsSet(String text, String brokenLetters) {
+        Set<Character> broken = new HashSet<>();
+        for (char c : brokenLetters.toCharArray()) broken.add(c);
+
+        int count = 0;
+        for (String w : text.split(" ")) {
+            boolean ok = true;
+            for (char c : w.toCharArray()) {
+                if (broken.contains(c)) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok) count++;
+        }
+        return count;
+    }
+}
+```
+
+**Time:** O(N) average (each char lookup O(1)).
+**Space:** O(B).
+
+---
+
+### 3) Optimal — boolean array for letters (fastest, minimal overhead) ⚡
+
+```java
+class Solution {
+    public int canBeTypedWords(String text, String brokenLetters) {
+        boolean[] broken = new boolean[26];
+        for (char c : brokenLetters.toCharArray()) {
+            broken[c - 'a'] = true;
+        }
+
+        int count = 0;
+        String[] words = text.split(" ");
+        for (String w : words) {
+            boolean ok = true;
+            for (char c : w.toCharArray()) {
+                if (broken[c - 'a']) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok) count++;
+        }
+        return count;
+    }
+}
+```
+
+**Time:** O(N).
+**Space:** O(1) (26-size boolean array).
+
+---
+
+### 4) Java 8 Streams (concise functional style) ✨
+
+```java
+import java.util.*;
+import java.util.stream.*;
+
+class Solution {
+    public int canBeTypedWordsStream(String text, String brokenLetters) {
+        boolean[] broken = new boolean[26];
+        for (char c : brokenLetters.toCharArray()) broken[c - 'a'] = true;
+
+        return (int) Arrays.stream(text.split(" "))
+            .filter(word -> word.chars().allMatch(ch -> !broken[ch - 'a']))
+            .count();
+    }
+}
+```
+
+**Note:** readable and compact, but stream overhead might be slightly higher than the loop in microbenchmarks.
+
+---
+
+# **Approach** → explanation of the method used 🛠️
+
+1. Split the `text` into words by the single space separator.
+2. Represent broken letters in a structure that supports quick membership checks:
+
+   * `indexOf` (works but scans small string each time),
+   * `HashSet<Character>` (O(1) average lookups),
+   * `boolean[26]` (fastest for lowercase letters).
+3. For each word, check its characters; if **none** of the characters are broken, increment the count.
+4. Return the final count.
+
+---
+
+# **Intuition** → reasoning behind the solution 💡
+
+* We only care if a word contains **any** broken character. That’s a membership problem repeated across many characters — so optimize lookup for broken letters.
+* Since letters are lowercase `a`–`z`, a fixed `boolean[26]` is the smallest and fastest option (constant-time checks, tiny memory).
+* Splitting by single space is safe because the problem guarantees no leading/trailing spaces and single-space separation.
+* Time complexity is linear in total characters of `text`, which fits comfortably in the constraints (`text.length <= 10^4`). ✅
+
+---
