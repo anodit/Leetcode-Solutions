@@ -1,0 +1,117 @@
+# 💡 Question
+
+You are given two non-negative integers `num1` and `num2`.
+
+👉 Operation Rule:
+
+* If `num1 >= num2`, subtract `num2` from `num1`.
+* Else, subtract `num1` from `num2`.
+
+⚡ Stop when either becomes `0`.
+Return ➡️ total number of operations done.
+
+---
+
+### 📘 Example 1
+
+```
+Input: num1 = 2, num2 = 3
+Output: 3
+```
+
+🔄 Steps:
+
+* Step 1️⃣: (2, 3) → 3 - 2 = 1 → (2, 1)
+* Step 2️⃣: (2, 1) → 2 - 1 = 1 → (1, 1)
+* Step 3️⃣: (1, 1) → 1 - 1 = 0 → (0, 1)
+  ✅ Done in 3 ops
+
+---
+
+### 📘 Example 2
+
+```
+Input: num1 = 10, num2 = 10
+Output: 1
+```
+
+🔄 Steps:
+
+* Step 1️⃣: (10, 10) → 10 - 10 = 0 → (0, 10)
+  ✅ Done in 1 op
+
+---
+
+# 🧠 Intuition (Emoji Style)
+
+* 🔁 Keep reducing bigger by smaller
+* 🏁 Stop when one hits zero
+* ⚡ Faster way: instead of subtracting 1 by 1, notice it’s basically **division like Euclidean GCD algorithm**
+
+  * `operations += bigger / smaller`
+  * `bigger %= smaller`
+* 🏎️ Much faster than simulating each step
+
+---
+
+# 📚 Approach
+
+1. 🕵️‍♂️ If either number is `0`, return `0`.
+2. 🔄 While both > 0:
+
+   * Always subtract smaller from bigger.
+   * Instead of looping one by one, use **integer division** to count operations quickly.
+   * Update remainder (`%`).
+3. 🏁 Return total count.
+
+---
+
+# ✅ Java Solutions
+
+## 🔹 Brute Force (❌ TLE possible for large inputs)
+
+```java
+class Solution {
+    public int countOperations(int num1, int num2) {
+        int count = 0;
+        while (num1 > 0 && num2 > 0) {
+            if (num1 >= num2) {
+                num1 -= num2;
+            } else {
+                num2 -= num1;
+            }
+            count++;
+        }
+        return count;
+    }
+}
+```
+
+⏱️ Time: O(max(num1, num2)) (too slow if big numbers)
+
+---
+
+## 🔹 Optimized (⚡ Euclidean-like)
+
+```java
+class Solution {
+    public int countOperations(int num1, int num2) {
+        int count = 0;
+        while (num1 > 0 && num2 > 0) {
+            if (num1 >= num2) {
+                count += num1 / num2; // count in one go 🚀
+                num1 %= num2;
+            } else {
+                count += num2 / num1;
+                num2 %= num1;
+            }
+        }
+        return count;
+    }
+}
+```
+
+⏱️ Time: O(log(max(num1, num2)))
+💾 Space: O(1)
+
+---
