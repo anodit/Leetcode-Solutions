@@ -2,7 +2,7 @@
 
 You are given two non-negative integers `num1` and `num2`.
 
-👉 Operation Rule:
+Operation Rule:
 
 * If `num1 >= num2`, subtract `num2` from `num1`.
 * Else, subtract `num1` from `num2`.
