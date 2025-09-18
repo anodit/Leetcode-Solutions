@@ -1,0 +1,139 @@
+# Question
+Given a string s consisting of words and spaces, return the length of the last word in the string.
+
+A word is a maximal substring consisting of non-space characters only.
+
+ 
+
+Example 1:
+
+Input: s = "Hello World"
+Output: 5
+Explanation: The last word is "World" with length 5.
+Example 2:
+
+Input: s = "   fly me   to   the moon  "
+Output: 4
+Explanation: The last word is "moon" with length 4.
+Example 3:
+
+Input: s = "luffy is still joyboy"
+Output: 6
+Explanation: The last word is "joyboy" with length 6.
+ 
+
+Constraints:
+
+1 <= s.length <= 104
+s consists of only English letters and spaces ' '.
+There will be at least one word in s.
+
+# 🧠 Intuition
+
+A "word" = maximal substring of non-space characters.
+We only care about the *last* word, so scanning from the end is natural: skip trailing spaces, then count contiguous non-space characters until a space (or string start). Simple and O(n) time, O(1) additional space. 🔍
+
+---
+
+# 🛠️ Approaches & Solutions
+
+## 1) Simple — `trim()` + `split()` (easy to write) 💡
+
+* `trim()` removes trailing/leading spaces.
+* `split("\\s+")` splits on whitespace; last element length is answer.
+* **Downside:** uses extra memory for split array and may be slower.
+
+```java
+// Simple: trim + split
+public class Solution {
+    public int lengthOfLastWord(String s) {
+        if (s == null || s.isEmpty()) return 0;
+        String[] parts = s.trim().split("\\s+");
+        return parts[parts.length - 1].length();
+    }
+}
+```
+
+**Complexity:**
+Time: O(n) (but split may add overhead).
+Space: O(n) (for the array and substrings).
+
+---
+
+## 2) Better — Reverse scan (optimal) 🔁
+
+* Start from the end index `i = s.length() - 1`.
+* Skip trailing spaces while `s.charAt(i) == ' '`.
+* Then count characters while `i >= 0` and `s.charAt(i) != ' '`.
+* Return the count.
+
+```java
+// Optimal: reverse scan, O(1) extra space
+public class Solution {
+    public int lengthOfLastWord(String s) {
+        int i = s.length() - 1;
+        // skip trailing spaces
+        while (i >= 0 && s.charAt(i) == ' ') i--;
+        // count last word length
+        int length = 0;
+        while (i >= 0 && s.charAt(i) != ' ') {
+            length++;
+            i--;
+        }
+        return length;
+    }
+}
+```
+
+**Complexity:**
+Time: O(n) — scan at most once.
+Space: O(1) — constant extra space. ✅
+
+---
+
+## 3) One-pass variation without explicit trim (compact) ✂️
+
+```java
+// One-pass compact version
+public class Solution {
+    public int lengthOfLastWord(String s) {
+        int len = 0;
+        boolean inWord = false;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            if (s.charAt(i) != ' ') {
+                inWord = true;
+                len++;
+            } else if (inWord) {
+                break; // we finished last word
+            }
+        }
+        return len;
+    }
+}
+```
+
+Same complexity as reverse-scan.
+
+---
+
+# 🧪 Edge cases to consider
+
+* Trailing spaces: `"Hello World   "` → should return `5`. (we skip trailing spaces)
+* Single word: `"Hello"` → returns `5`.
+* Many spaces then a word: `"   fly  "` → returns `3`.
+* At least one word guaranteed by constraints, so no empty-word-only input; but code above handles empty/null safely.
+
+---
+
+# ✅ Examples (matches prompt)
+
+* `"Hello World"` → `5` (World)
+* `"   fly me   to   the moon  "` → `4` (moon)
+* `"luffy is still joyboy"` → `6` (joyboy)
+
+---
+
+# 🧾 Summary (quick)
+
+* Best practical solution: reverse scan — O(n) time, O(1) space. 🔝
+* Use `trim()`+`split()` for quickest coding in interviews if allowed — but mention extra space/time overhead. 📝
