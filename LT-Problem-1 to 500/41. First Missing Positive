@@ -1,0 +1,130 @@
+# ❓ Question
+
+Given an unsorted integer array `nums`. Return the **smallest positive integer** that is not present in `nums`.
+
+You must implement an algorithm that runs in **O(n)** time and uses **O(1)** auxiliary space.
+
+**Example 1:**
+Input: `nums = [1,2,0]`
+Output: `3`
+
+**Example 2:**
+Input: `nums = [3,4,-1,1]`
+Output: `2`
+
+**Example 3:**
+Input: `nums = [7,8,9,11,12]`
+Output: `1`
+
+**Constraints:**
+
+* `1 <= nums.length <= 10^5`
+* `-2^31 <= nums[i] <= 2^31 - 1`
+
+---
+
+# 💻 Solution(s)
+
+### ✅ Brute Force (Sorting)
+
+```java
+import java.util.Arrays;
+
+public class BruteForce {
+    public int firstMissingPositive(int[] nums) {
+        Arrays.sort(nums);
+        int expected = 1;
+        for (int num : nums) {
+            if (num == expected) {
+                expected++;
+            } else if (num > expected) {
+                break;
+            }
+        }
+        return expected;
+    }
+}
+```
+
+* **Time:** O(n log n)
+* **Space:** O(1) (if in-place sort)
+
+---
+
+### ✅ HashSet (Extra Space)
+
+```java
+import java.util.HashSet;
+
+public class UsingHashSet {
+    public int firstMissingPositive(int[] nums) {
+        HashSet<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            if (num > 0) set.add(num);
+        }
+        int i = 1;
+        while (true) {
+            if (!set.contains(i)) return i;
+            i++;
+        }
+    }
+}
+```
+
+* **Time:** O(n) average
+* **Space:** O(n)
+
+---
+
+### ✅ Optimal (Index Placement / Cyclic Swap)
+
+```java
+public class FirstMissingPositive {
+    public int firstMissingPositive(int[] nums) {
+        int n = nums.length;
+
+        // Place each number at its correct index
+        for (int i = 0; i < n; i++) {
+            while (nums[i] >= 1 && nums[i] <= n && nums[nums[i] - 1] != nums[i]) {
+                int correctIndex = nums[i] - 1;
+                int temp = nums[i];
+                nums[i] = nums[correctIndex];
+                nums[correctIndex] = temp;
+            }
+        }
+
+        // Find first index where nums[i] != i+1
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != i + 1) return i + 1;
+        }
+        return n + 1;
+    }
+}
+```
+
+* **Time:** O(n)
+* **Space:** O(1)
+
+---
+
+# 🛠️ Approach
+
+1. Ignore negatives, zero, and numbers greater than `n` (they don’t matter).
+2. Try to **place each number at index `num - 1`** using swaps.
+
+   * Example: value `3` should be at index `2`.
+3. After placement, iterate:
+
+   * The first index `i` where `nums[i] != i + 1` → return `i + 1`.
+4. If all `1..n` are present, answer is `n+1`.
+
+---
+
+# 💡 Intuition
+
+👉 The answer must lie in the range **`[1, n+1]`** (where `n = nums.length`):
+
+* If all numbers `1..n` are present, smallest missing is `n+1`.
+* Otherwise, it’s the first missing within `1..n`.
+
+👉 By **reordering numbers in place** (like a mini hash table inside the array), we make it easy to spot which number is missing in a single scan.
