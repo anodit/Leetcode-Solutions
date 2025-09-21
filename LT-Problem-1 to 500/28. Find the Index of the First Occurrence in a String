@@ -1,0 +1,127 @@
+## ❓ Question
+
+Given two strings **needle** and **haystack**, return the index of the first occurrence of **needle** in **haystack**, or -1 if **needle** is not part of **haystack**.
+
+### Example 1:
+
+Input:
+`haystack = "sadbutsad", needle = "sad"`
+Output:
+`0`
+Explanation: `"sad"` occurs at index 0 and 6. The first occurrence is at index 0, so we return `0`.
+
+### Example 2:
+
+Input:
+`haystack = "leetcode", needle = "leeto"`
+Output:
+`-1`
+Explanation: `"leeto"` did not occur in `"leetcode"`, so we return `-1`.
+
+### Constraints:
+
+* `1 <= haystack.length, needle.length <= 10^4`
+* `haystack` and `needle` consist of only lowercase English characters.
+
+---
+
+## 💡 Approach
+
+We need to find the **first occurrence** of `needle` in `haystack`.
+There are multiple ways to solve it:
+
+1. **Brute Force (Naive search)** → Compare substring of length `needle.length()` at each index.
+2. **Built-in methods** → Use `indexOf` (Java gives direct method).
+3. **Optimal (KMP Algorithm)** → Use prefix-function (LPS array) to skip unnecessary comparisons. (Good for interviews 💯).
+
+---
+
+## 🚀 Intuition
+
+* The problem is like searching for a "word" inside a "sentence".
+* The naive way is to **slide window** of size `needle.length()` over `haystack` and check.
+* But if we want **better performance**, we can use **KMP Algorithm** to avoid re-checking characters.
+* For coding interviews → Mention both brute force and KMP (shows depth).
+
+---
+
+## ✅ Solutions
+
+### 🔹 Solution 1: Using Java’s Built-in `indexOf()` (Simple & Efficient)
+
+```java
+class Solution {
+    public int strStr(String haystack, String needle) {
+        return haystack.indexOf(needle);
+    }
+}
+```
+
+👉 Time Complexity: **O(n \* m)** internally (depends on implementation).
+👉 Space Complexity: **O(1)**
+
+---
+
+### 🔹 Solution 2: Brute Force (Manual Implementation)
+
+```java
+class Solution {
+    public int strStr(String haystack, String needle) {
+        int n = haystack.length();
+        int m = needle.length();
+
+        for (int i = 0; i <= n - m; i++) {
+            int j = 0;
+            while (j < m && haystack.charAt(i + j) == needle.charAt(j)) {
+                j++;
+            }
+            if (j == m) return i; // found match
+        }
+        return -1; // not found
+    }
+}
+```
+
+👉 Time Complexity: **O((n-m+1) \* m)** worst case
+👉 Space Complexity: **O(1)**
+
+---
+
+### 🔹 Solution 3: KMP Algorithm (Optimal 💎)
+
+```java
+class Solution {
+    public int strStr(String haystack, String needle) {
+        int n = haystack.length(), m = needle.length();
+        if (m == 0) return 0;
+
+        // Build LPS (Longest Prefix Suffix) array
+        int[] lps = new int[m];
+        for (int i = 1, len = 0; i < m; ) {
+            if (needle.charAt(i) == needle.charAt(len)) {
+                lps[i++] = ++len;
+            } else if (len > 0) {
+                len = lps[len - 1];
+            } else {
+                lps[i++] = 0;
+            }
+        }
+
+        // Search using KMP
+        for (int i = 0, j = 0; i < n; ) {
+            if (haystack.charAt(i) == needle.charAt(j)) {
+                i++; j++;
+                if (j == m) return i - j;
+            } else if (j > 0) {
+                j = lps[j - 1];
+            } else {
+                i++;
+            }
+        }
+        return -1;
+    }
+}
+```
+
+👉 Time Complexity: **O(n + m)**
+👉 Space Complexity: **O(m)**
