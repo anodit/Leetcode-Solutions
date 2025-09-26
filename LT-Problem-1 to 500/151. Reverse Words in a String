@@ -1,0 +1,174 @@
+🔹 151. Reverse Words in a String
+Question
+
+Given an input string s, reverse the order of the words.
+
+A word is defined as a sequence of non-space characters. The words in s will be separated by at least one space.
+
+Return a string of the words in reverse order concatenated by a single space.
+
+Note: You must not use any library function like split() that directly does the job.
+
+Example 1:
+Input:  s = "the sky is blue"
+Output: "blue is sky the"
+
+Example 2:
+Input:  s = "  hello world  "
+Output: "world hello"
+Explanation: Your reversed string should not contain leading or trailing spaces.
+
+Example 3:
+Input:  s = "a good   example"
+Output: "example good a"
+Explanation: Reduce multiple spaces between two words to a single space.
+
+Constraints:
+
+1 <= s.length <= 10^4
+
+s contains English letters (upper-case and lower-case), digits, and spaces ' '.
+
+There is at least one word in s.
+
+✅ Solutions
+Solution 1: Brute Force (Using Built-in split & reverse)
+class Solution {
+    public String reverseWords(String s) {
+        // trim to remove leading/trailing spaces
+        s = s.trim();
+        // split on one or more spaces using regex
+        String[] words = s.split("\\s+");
+        
+        StringBuilder sb = new StringBuilder();
+        for (int i = words.length - 1; i >= 0; i--) {
+            sb.append(words[i]);
+            if (i > 0) sb.append(" ");
+        }
+        return sb.toString();
+    }
+}
+
+Solution 2: Manual Implementation (No split())
+class Solution {
+    public String reverseWords(String s) {
+        int n = s.length();
+        StringBuilder sb = new StringBuilder();
+        
+        int i = n - 1;
+        while (i >= 0) {
+            // skip spaces
+            while (i >= 0 && s.charAt(i) == ' ') i--;
+            if (i < 0) break;
+            
+            int j = i;
+            // find the start of the word
+            while (i >= 0 && s.charAt(i) != ' ') i--;
+            
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(s.substring(i + 1, j + 1));
+        }
+        return sb.toString();
+    }
+}
+
+Solution 3: Optimal (In-place Trim + Reverse)
+
+(Useful if interviewer asks for O(1) extra space approach)
+
+Steps:
+
+Trim leading & trailing spaces.
+
+Remove extra spaces between words (2-pointer).
+
+Reverse the entire string.
+
+Reverse each word individually.
+
+class Solution {
+    public String reverseWords(String s) {
+        // Convert to char array for in-place operation
+        char[] chars = s.toCharArray();
+        int n = chars.length;
+
+        // Step 1: Trim spaces
+        int left = 0, right = n - 1;
+        while (left <= right && chars[left] == ' ') left++;
+        while (right >= left && chars[right] == ' ') right--;
+
+        // Step 2: Reduce multiple spaces
+        StringBuilder sb = new StringBuilder();
+        while (left <= right) {
+            if (chars[left] != ' ' || sb.charAt(sb.length() - 1) != ' ')
+                sb.append(chars[left]);
+            left++;
+        }
+
+        // Step 3: Reverse whole string
+        reverse(sb, 0, sb.length() - 1);
+
+        // Step 4: Reverse each word
+        int start = 0;
+        for (int i = 0; i <= sb.length(); i++) {
+            if (i == sb.length() || sb.charAt(i) == ' ') {
+                reverse(sb, start, i - 1);
+                start = i + 1;
+            }
+        }
+        return sb.toString();
+    }
+
+    private void reverse(StringBuilder sb, int left, int right) {
+        while (left < right) {
+            char temp = sb.charAt(left);
+            sb.setCharAt(left++, sb.charAt(right));
+            sb.setCharAt(right--, temp);
+        }
+    }
+}
+
+🔹 Approach
+Solution 1 (Split & Reverse)
+
+Use split("\\s+") to split by one/more spaces.
+
+Reverse the words array and join with single space.
+
+Time Complexity: O(n)
+
+Space Complexity: O(n) (extra array of words).
+
+Solution 2 (Manual Traverse)
+
+Traverse from right to left.
+
+Skip spaces, find each word, and append to result.
+
+Avoids regex overhead and extra splitting.
+
+Time Complexity: O(n)
+
+Space Complexity: O(n) (result StringBuilder).
+
+Solution 3 (In-place Reverse)
+
+Clean up spaces (like "hello world" → "hello world").
+
+Reverse entire string → words in reverse order.
+
+Reverse each word → correct orientation.
+
+Time Complexity: O(n)
+
+Space Complexity: O(1) (in-place with char array).
+
+🔹 Intuition
+
+Words are separated by spaces.
+
+If we reverse the entire sentence first, words get reversed too.
+
+Then if we reverse each word individually, we restore correct word order while keeping them reversed in sequence.
+
+That gives the required reversed words string.
