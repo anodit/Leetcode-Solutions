@@ -1,0 +1,123 @@
+❓ Question
+
+Given two non-negative integers, num1 and num2 represented as strings, return the sum of num1 and num2 as a string.
+
+You must solve the problem without using any built-in library for handling large integers (such as BigInteger) or directly converting the inputs to integers.
+
+Example 1:
+
+Input:
+
+num1 = "11", num2 = "123"
+
+
+Output:
+
+"134"
+
+Example 2:
+
+Input:
+
+num1 = "456", num2 = "77"
+
+
+Output:
+
+"533"
+
+Example 3:
+
+Input:
+
+num1 = "0", num2 = "0"
+
+
+Output:
+
+"0"
+
+
+Constraints:
+
+1 <= num1.length, num2.length <= 10^4
+
+num1 and num2 consist only of digits.
+
+num1 and num2 do not contain any leading zeros except the number "0".
+
+💡 Intuition
+
+The task is basically manual addition like on paper ✍️.
+
+Start from the last digit of both strings.
+
+Add them along with any carry.
+
+Append the result to a builder.
+
+Continue until both strings and carry are processed.
+
+Reverse at the end (since we build result from back to front).
+
+This avoids integer overflow and keeps the logic simple.
+
+🛠️ Approach
+
+Use two pointers (i for num1, j for num2) starting from the last index.
+
+Keep a carry variable initialized to 0.
+
+At each step:
+
+Take digit from num1 (if exists) else 0.
+
+Take digit from num2 (if exists) else 0.
+
+Compute sum = d1 + d2 + carry.
+
+Append sum % 10 to result.
+
+Update carry = sum / 10.
+
+After loop, if carry > 0, append it.
+
+Reverse the result string and return.
+
+💻 Solution(s)
+✅ Brute Force (Not recommended but intuitive)
+
+Convert strings digit by digit to integer.
+
+Add integers.
+
+Convert back to string.
+❌ Fails for very large numbers (overflow).
+
+🚀 Optimal Solution (Two-pointer + Carry)
+class Solution {
+    public String addStrings(String num1, String num2) {
+        StringBuilder sb = new StringBuilder();
+        int i = num1.length() - 1;
+        int j = num2.length() - 1;
+        int carry = 0;
+
+        while (i >= 0 || j >= 0 || carry > 0) {
+            int d1 = (i >= 0) ? num1.charAt(i) - '0' : 0;
+            int d2 = (j >= 0) ? num2.charAt(j) - '0' : 0;
+
+            int sum = d1 + d2 + carry;
+            sb.append(sum % 10);
+            carry = sum / 10;
+
+            i--;
+            j--;
+        }
+
+        return sb.reverse().toString();
+    }
+}
+
+
+✅ Time Complexity → O(max(n, m)) (we iterate through both strings once).
+✅ Space Complexity → O(max(n, m)) (for the StringBuilder result).
