@@ -1,0 +1,144 @@
+❓ Question
+
+You are given a 0-indexed integer array nums, where nums.length == n.
+You must perform the following operation until nums becomes a single element:
+
+For each index i from 0 to n-2:
+Replace nums[i] with (nums[i] + nums[i+1]) % 10.
+
+After performing the operation n-1 times, only one element remains.
+Return that element.
+
+Example 1:
+
+Input: nums = [1,2,3,4,5]
+Output: 8
+
+
+Example 2:
+
+Input: nums = [5]
+Output: 5
+
+
+Constraints:
+
+1 <= nums.length <= 1000
+
+0 <= nums[i] <= 9
+
+💻 Solution(s)
+🐢 Brute Force (Simulation – O(n²))
+class Solution {
+    public int triangularSum(int[] nums) {
+        int n = nums.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                nums[j] = (nums[j] + nums[j + 1]) % 10;
+            }
+        }
+        return nums[0];
+    }
+}
+
+📐 Math Approach (Binomial Coefficients – O(n²))
+
+Using the identity:
+
+𝑎
+𝑛
+𝑠
+=
+∑
+𝑖
+=
+0
+𝑛
+−
+1
+(
+𝑛
+−
+1
+𝑖
+)
+⋅
+𝑛
+𝑢
+𝑚
+𝑠
+[
+𝑖
+]
+(
+m
+o
+d
+10
+)
+ans=
+i=0
+∑
+n−1
+	​
+
+(
+i
+n−1
+	​
+
+)⋅nums[i](mod10)
+class Solution {
+    public int triangularSum(int[] nums) {
+        int n = nums.length;
+        int[] coeff = new int[n];
+        coeff[0] = 1;
+        for (int r = 1; r <= n - 1; r++) {
+            for (int i = r; i >= 1; i--) {
+                coeff[i] = (coeff[i] + coeff[i - 1]) % 10;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = (ans + coeff[i] * nums[i]) % 10;
+        }
+        return ans;
+    }
+}
+
+⚡ Optimized Math (Binomial via Multiplicative Formula – O(n))
+import java.math.BigInteger;
+
+class Solution {
+    public int triangularSum(int[] nums) {
+        int n = nums.length;
+        BigInteger coeff = BigInteger.ONE;
+        BigInteger mod = BigInteger.TEN;
+        BigInteger result = BigInteger.ZERO;
+
+        for (int i = 0; i < n; i++) {
+            result = result.add(coeff.multiply(BigInteger.valueOf(nums[i]))).mod(mod);
+            if (i < n - 1) {
+                coeff = coeff.multiply(BigInteger.valueOf(n - 1 - i))
+                             .divide(BigInteger.valueOf(i + 1));
+            }
+        }
+        return result.intValue();
+    }
+}
+
+🛠️ Approach
+
+Simulation way → Shrink array step by step until one number remains.
+
+Math way → Notice the last number is actually a combination of binomial coefficients × nums[i] (mod 10).
+
+Use either Pascal’s triangle or direct formula to compute.
+
+💡 Intuition
+
+Every step is like building the Pascal’s Triangle 🔺 (each number formed by adding two above it).
+
+Final number is simply the binomial expansion of coefficients multiplied by the original array.
+
+That’s why math shortcut works faster ⚡.
