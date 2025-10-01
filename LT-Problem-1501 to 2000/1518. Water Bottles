@@ -1,0 +1,139 @@
+1518. Water Bottles 🚰✨
+📘 Problem — statement
+
+You have numBottles full water bottles and an exchange system: numExchange empty bottles can be traded for 1 full bottle.
+Each time you drink a full bottle you get 1 empty. Return the maximum number of bottles you can drink.
+
+Examples
+
+Input: numBottles = 9, numExchange = 3 → Output: 13
+Explanation: Drink 9 → 9 empties → exchange 3×3 → +3 full → drink 3 → 3 empties → exchange 1×3 → +1 full → drink 1 → total = 9+3+1 = 13.
+
+Constraints (typical LeetCode): 1 <= numBottles <= 100, 2 <= numExchange <= 100.
+
+💡 Intuition — why this works 🧠
+
+Every time you drink a bottle you produce one empty. Empties accumulate and can be exchanged for more full bottles.
+
+This is a process that repeats until you don’t have enough empties to exchange.
+
+You can simulate the exchange loop (greedy simulation). Or use a neat math shortcut: if k = numExchange > 1, the total bottles drunk equals
+numBottles + (numBottles - 1) / (k - 1) (integer division).
+That formula comes from grouping empties: after drinking numBottles initial bottles, each additional drank bottle effectively “costs” k-1 previously-drunk bottles’ empties (because you need k empties to get 1 full, but that full upon drinking returns 1 empty back — net cost k-1). The (numBottles - 1) accounts for the fact you can't start exchanging until you have enough empties.
+
+🛠 Approaches & Solutions (Java)
+1) Simulation (intuitive, O(totalDrunk) time) — easy to understand ✅
+
+Simulate drinking all current full bottles, accumulate empties, exchange empties for new fulls, repeat.
+
+// Simulation solution - Java
+class Solution {
+    public int numWaterBottles(int numBottles, int numExchange) {
+        int full = numBottles;   // current full bottles available to drink
+        int empty = 0;           // current empties
+        int total = 0;           // total drunk
+
+        while (full > 0) {
+            total += full;          // drink all current full bottles
+            empty += full;         // they become empties
+            full = empty / numExchange; // exchange empties for new full bottles
+            empty = empty % numExchange; // remaining empties after exchange
+        }
+
+        return total;
+    }
+}
+
+Line-by-line explanation 🧾
+
+int full = numBottles; → start with initial full bottles.
+
+int empty = 0; → no empties initially.
+
+int total = 0; → count of drunk bottles.
+
+while (full > 0) → while we have full bottles to drink:
+
+total += full; → drink all full bottles, add to total.
+
+empty += full; → those become empties.
+
+full = empty / numExchange; → trade empties for new full bottles (integer division).
+
+empty = empty % numExchange; → leftover empties after trade.
+
+return total; → final answer.
+
+2) Simulation (step-by-step, one-by-one) — alternative variant
+
+You can simulate drinking one-by-one (slower but illustrative):
+
+class Solution {
+    public int numWaterBottles(int numBottles, int numExchange) {
+        int full = numBottles;
+        int empty = 0;
+        int total = 0;
+
+        while (full > 0) {
+            // drink one bottle
+            full--;
+            total++;
+            empty++;
+
+            // whenever we have enough empties, exchange them
+            if (empty == numExchange) {
+                full++;
+                empty = 0;
+            }
+        }
+
+        return total;
+    }
+}
+
+
+This is the same logic but more granular: drink one, check exchange.
+
+3) Math formula (O(1) time) — constant-time trick ⚡️
+
+Direct formula when numExchange > 1:
+
+class Solution {
+    public int numWaterBottles(int numBottles, int numExchange) {
+        if (numExchange <= 1) {
+            // Problem constraints usually guarantee numExchange >= 2.
+            // If numExchange == 1, theoretically infinite, but LeetCode disallows.
+            return Integer.MAX_VALUE; // or handle as per constraints
+        }
+        return numBottles + (numBottles - 1) / (numExchange - 1);
+    }
+}
+
+Why formula works (short):
+
+After the initial numBottles drinks you have numBottles empties.
+
+Each extra bottle gained via exchange requires numExchange empties, but drinking that bottle gives back 1 empty — net cost is numExchange - 1 empties per extra drink.
+
+Total extra drinks = (numBottles - 1) / (numExchange - 1) (integer division), add original numBottles.
+
+🔎 Dry run (example) — numBottles = 9, numExchange = 3 🧮
+
+Simulation flow:
+
+Start: full=9, empty=0, total=0
+
+Drink 9 → total=9, empty=9 → exchange 9/3 = 3 full, leftover empty 0 → full=3
+
+Drink 3 → total=12, empty=3 → exchange 3/3 = 1 full, leftover empty 0 → full=1
+
+Drink 1 → total=13, empty=1 → cannot exchange (need 3) → stop
+Answer = 13
+
+Formula: 9 + (9-1)/(3-1) = 9 + 8/2 = 9 + 4 = 13 ✅
+
+⚠️ Edge cases & notes
+
+Usually numExchange >= 2 is guaranteed. If numExchange == 1 theoretically gives infinite drinks (trade 1 empty → 1 full repeatedly); most problem constraints forbid that.
+
+Use simulation when you want clarity; use formula for speed and elegance.
