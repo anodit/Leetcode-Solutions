@@ -1,0 +1,108 @@
+3100. Water Bottles II 🧊🥤
+
+Problem (classic water-bottles variant):
+You start with numBottles full water bottles. After drinking a bottle you get an empty. You can exchange numExchange empty bottles for one full bottle. Return the maximum number of bottles you can drink.
+
+Constraints / notes:
+
+1 <= numBottles <= 10^9
+
+2 <= numExchange <= 10^9 (if numExchange == 1 then you could drink infinitely — assume numExchange >= 2)
+
+All inputs are integers.
+
+Examples:
+
+Input: numBottles = 9, numExchange = 3 → Output: 13
+Explanation: Drink 9 → 9 empties → exchange 3 → drink 3 → 3 empties + 0 leftover → exchange 1 more time? step through yields 13 total.
+
+Input: numBottles = 15, numExchange = 4 → Output: 18
+
+Input: numBottles = 2, numExchange = 3 → Output: 2
+
+Solutions ✅
+1) Brute-force / Simulation (iterative) — easy to reason, O(log) steps typical 🧮
+
+Simulate drinking and exchanging until you cannot make another exchange.
+
+// Simulation iterative — O(#exchanges) time, O(1) space
+public class Solution {
+    public int numWaterBottles(int numBottles, int numExchange) {
+        int totalDrank = 0;
+        int empties = 0;
+        int full = numBottles;
+
+        while (full > 0) {
+            // drink all full bottles we have now
+            totalDrank += full;
+            empties += full;
+            full = 0;
+
+            // exchange empties for new full bottles
+            int newFull = empties / numExchange;
+            empties = empties % numExchange;
+            full = newFull;
+        }
+        return totalDrank;
+    }
+}
+
+
+Why it works: each loop you drink all available full bottles and then convert empties to new full bottles as many as possible. Loop ends when no full bottles remain and you can't exchange enough empties.
+
+2) Cleaner loop (direct while empties >= numExchange) — usual compact form ✂️
+public class Solution {
+    public int numWaterBottles(int numBottles, int numExchange) {
+        int total = numBottles;
+        int empties = numBottles;
+
+        while (empties >= numExchange) {
+            int gained = empties / numExchange;
+            total += gained;
+            empties = empties % numExchange + gained;
+        }
+        return total;
+    }
+}
+
+
+Note: This is the most common, readable solution: maintain total and empties, exchange as long as possible.
+
+3) Recursive approach — same logic, recursive style (not recommended for huge inputs due to recursion depth) 🔁
+public class Solution {
+    public int numWaterBottles(int numBottles, int numExchange) {
+        return helper(numBottles, 0, numExchange);
+    }
+
+    private int helper(int full, int empties, int k) {
+        if (full == 0) return 0;
+        // drink all current full bottles
+        int drank = full;
+        empties += full;
+        full = empties / k;
+        empties = empties % k;
+        return drank + helper(full, empties, k);
+    }
+}
+
+4) Mathematical / O(1)-ish observation (derivation) — constant reasoning, but still uses loop for safe integer math 🔍
+
+There is a known trick: you can think of the process like this — every numExchange empties produce 1 extra drink. Ultimately, total drinks = numBottles + (numBottles - 1) / (numExchange - 1) only when exchanging can “carry over” — but be cautious: that closed form works for the classical variant where you can borrow or when certain assumptions hold. Safer and simpler: use the compact loop (solution 2) — it's fast and reliable for constraints.
+
+Recommendation: Use solution (2). It's simple, fast, and safe for the given constraints.
+
+Approach & Intuition 🧠✨
+
+Intuition: Every bottle you drink becomes an empty. When you collect k = numExchange empties, you can trade them for one new full bottle (which itself becomes an empty when drunk). So empties act as currency that convert to more drinks. Keep converting until you cannot gather k empties.
+
+Invariant: At any point, total counts all bottles drunk, and empties counts leftover empties. When empties < k and full == 0, we stop.
+
+Why the loop is small: Each exchange reduces empties roughly by factor k (modulo remainders), so number of iterations ~ logarithmic in numBottles in practice — trivial for any input up to 10^9.
+
+Edge case: numExchange == 1 would mean infinite drinks (you exchange 1 empty for 1 full forever). Problem constraints typically ensure numExchange >= 2.
+
+Complexity 📈
+
+Time: O(log numBottles) in practice (each exchange reduces empties); worst-case iterations << 10^9 — extremely fast.
+
+Space: O(1) constant extra space.
